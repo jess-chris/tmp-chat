@@ -8,16 +8,15 @@ const helmet = require('helmet');
 const routes = require('./routes');
 
 const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 
 const { environment } = require('./config');
 const isProduction = environment === 'production';
 
+
 app.use(logger('dev'));
-
 app.use(cookieParser());
-
-
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -38,9 +37,24 @@ app.use(
   })
 );
 
-
-
 app.use(routes);
+
+
+// Socket connections
+
+io.on('connection', (sock) => {
+
+  console.info(`socket: ${sock.id} connected`);
+
+
+});
+
+
+
+
+
+
+
 
 // catch 404 and forward to error handler
 app.use((_req, _res, next) => {
